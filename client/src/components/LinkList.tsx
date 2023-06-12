@@ -43,7 +43,7 @@ const LinkList = () => {
     document: NewLinkDocument,
     updateQuery: (prev, { subscriptionData }) => {
       if (!subscriptionData.data) return prev;
-      const newLink = (subscriptionData.data as Subscription).newLink;
+      const { newLink } = subscriptionData.data as Subscription;
 
       if (!newLink) {
         return prev;
