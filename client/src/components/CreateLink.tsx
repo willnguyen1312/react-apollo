@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import {
   FeedDocument,
+  FeedQueryResult,
   useCreateLinkMutation,
 } from "../../graphql/generated/schema";
 import { LINKS_PER_PAGE } from "../constants";
@@ -31,14 +32,18 @@ const CreateLink = () => {
       const skip = 0;
       const orderBy = { createdAt: "desc" };
 
-      const result: any = cache.readQuery({
+      const result = cache.readQuery({
         query: FeedDocument,
         variables: {
           take,
           skip,
           orderBy,
         },
-      });
+      }) as FeedQueryResult["data"];
+
+      if (!result) {
+        return;
+      }
 
       cache.writeQuery({
         query: FeedDocument,

@@ -1,8 +1,16 @@
-import { FeedDocument, useVoteMutation } from "../../graphql/generated/schema";
+import {
+  FeedDocument,
+  FeedQueryResult,
+  FeedSearchQuery,
+  useVoteMutation,
+} from "../../graphql/generated/schema";
 import { AUTH_TOKEN, LINKS_PER_PAGE } from "../constants";
 import { timeDifferenceForDate } from "../utils";
 
-const Link = (props: any) => {
+const LinkComponent = (props: {
+  link: FeedSearchQuery["feed"]["links"][0];
+  index: number;
+}) => {
   const { link } = props;
   const authToken = localStorage.getItem(AUTH_TOKEN);
 
@@ -18,16 +26,22 @@ const Link = (props: any) => {
       if (!data) return;
 
       const { vote } = data;
-      const { feed }: any = cache.readQuery({
+      const result = cache.readQuery({
         query: FeedDocument,
         variables: {
           take,
           skip,
           orderBy,
         },
-      });
+      }) as FeedQueryResult["data"];
 
-      const updatedLinks = feed.links.map((feedLink: any) => {
+      if (!result) {
+        return;
+      }
+
+      const { feed } = result;
+
+      const updatedLinks = feed.links.map((feedLink) => {
         if (feedLink.id === link.id) {
           return {
             ...feedLink,
@@ -85,4 +99,4 @@ const Link = (props: any) => {
   );
 };
 
-export default Link;
+export default LinkComponent;

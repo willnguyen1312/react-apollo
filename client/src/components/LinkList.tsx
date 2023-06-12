@@ -1,7 +1,9 @@
 import {
+  FeedQuery,
   NewLinkDocument,
   NewVotesDocument,
   Sort,
+  Subscription,
   useFeedQuery,
 } from "../../graphql/generated/schema";
 import { LINKS_PER_PAGE } from "../constants";
@@ -16,12 +18,12 @@ const getQueryVariables = (isNewPage: boolean, page: number) => {
   return { take, skip, orderBy };
 };
 
-const getLinksToRender = (isNewPage: boolean, data: any) => {
+const getLinksToRender = (isNewPage: boolean, data: FeedQuery) => {
   if (isNewPage) {
     return data.feed.links;
   }
-  const rankedLinks: any = data.feed.links.slice();
-  rankedLinks.sort((l1: any, l2: any) => l2.votes.length - l1.votes.length);
+  const rankedLinks = data.feed.links.slice();
+  rankedLinks.sort((l1, l2) => l2.votes.length - l1.votes.length);
   return rankedLinks;
 };
 
@@ -39,10 +41,15 @@ const LinkList = () => {
 
   subscribeToMore({
     document: NewLinkDocument,
-    updateQuery: (prev, { subscriptionData }: any) => {
+    updateQuery: (prev, { subscriptionData }) => {
       if (!subscriptionData.data) return prev;
-      const newLink = subscriptionData.data.newLink;
-      const exists = prev.feed.links.find(({ id }: any) => id === newLink.id);
+      const newLink = (subscriptionData.data as Subscription).newLink;
+
+      if (!newLink) {
+        return prev;
+      }
+
+      const exists = prev.feed.links.find(({ id }) => id === newLink.id);
       if (exists) return prev;
 
       return Object.assign({}, prev, {
@@ -65,7 +72,7 @@ const LinkList = () => {
       {error && <pre>{JSON.stringify(error, null, 2)}</pre>}
       {data && (
         <>
-          {getLinksToRender(isNewPage, data).map((link: any, index: number) => (
+          {getLinksToRender(isNewPage, data).map((link, index: number) => (
             <Link key={link.id} link={link} index={index + pageIndex} />
           ))}
           {isNewPage && (
