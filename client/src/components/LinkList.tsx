@@ -1,10 +1,11 @@
 import {
+  FeedDocument,
   FeedQuery,
-  NewLinkDocument,
-  NewVotesDocument,
+  FeedQueryResult,
   Sort,
-  Subscription,
   useFeedQuery,
+  useNewLinkSubscription,
+  useNewVotesSubscription,
 } from "../../graphql/generated/schema";
 import { LINKS_PER_PAGE } from "../constants";
 import Link from "./Link";
@@ -35,35 +36,88 @@ const LinkList = () => {
   const page = parseInt(pageIndexParams[pageIndexParams.length - 1]);
   const pageIndex = page ? (page - 1) * LINKS_PER_PAGE : 0;
 
-  const { data, loading, error, subscribeToMore } = useFeedQuery({
+  const {
+    data,
+    loading,
+    error,
+    // subscribeToMore
+  } = useFeedQuery({
     variables: getQueryVariables(isNewPage, page),
   });
 
-  subscribeToMore({
-    document: NewLinkDocument,
-    updateQuery: (prev, { subscriptionData }) => {
-      if (!subscriptionData.data) return prev;
-      const { newLink } = subscriptionData.data as Subscription;
+  // subscribeToMore({
+  //   document: NewLinkDocument,
+  //   updateQuery: (prev, { subscriptionData }) => {
+  //     if (!subscriptionData.data) return prev;
+  //     const { newLink } = subscriptionData.data as Subscription;
 
-      if (!newLink) {
-        return prev;
+  //     if (!newLink) {
+  //       return prev;
+  //     }
+
+  //     const exists = prev.feed.links.find(({ id }) => id === newLink.id);
+  //     if (exists) return prev;
+
+  //     return Object.assign({}, prev, {
+  //       feed: {
+  //         links: [newLink, ...prev.feed.links],
+  //         count: prev.feed.links.length + 1,
+  //         __typename: prev.feed.__typename,
+  //       },
+  //     });
+  //   },
+  // });
+
+  // subscribeToMore({
+  //   document: NewVotesDocument,
+  // });
+
+  useNewVotesSubscription();
+
+  useNewLinkSubscription({
+    onData: (result) => {
+      const {
+        data: { data },
+        client,
+      } = result;
+      if (!data) {
+        return;
       }
 
-      const exists = prev.feed.links.find(({ id }) => id === newLink.id);
-      if (exists) return prev;
+      const { newLink } = data;
 
-      return Object.assign({}, prev, {
-        feed: {
-          links: [newLink, ...prev.feed.links],
-          count: prev.feed.links.length + 1,
-          __typename: prev.feed.__typename,
+      if (!newLink) {
+        return;
+      }
+
+      const take = LINKS_PER_PAGE;
+      const skip = 0;
+      const orderBy = { createdAt: "desc" };
+
+      const prev = client.cache.readQuery({
+        query: FeedDocument,
+        variables: {
+          take,
+          skip,
+          orderBy,
+        },
+      }) as FeedQueryResult["data"];
+
+      client.cache.writeQuery({
+        query: FeedDocument,
+        data: {
+          feed: {
+            links: [newLink, ...(prev?.feed.links || [])],
+          },
+        },
+
+        variables: {
+          take,
+          skip,
+          orderBy,
         },
       });
     },
-  });
-
-  subscribeToMore({
-    document: NewVotesDocument,
   });
 
   return (
