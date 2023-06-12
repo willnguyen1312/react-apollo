@@ -1,34 +1,10 @@
-import { gql, useLazyQuery } from "@apollo/client";
 import { useState } from "react";
+import { useFeedSearchLazyQuery } from "../../graphql/generated/schema";
 import Link from "./Link";
-
-const FEED_SEARCH_QUERY = gql`
-  query FeedSearchQuery($filter: String!) {
-    feed(filter: $filter) {
-      id
-      links {
-        id
-        url
-        description
-        createdAt
-        postedBy {
-          id
-          name
-        }
-        votes {
-          id
-          user {
-            id
-          }
-        }
-      }
-    }
-  }
-`;
 
 const Search = () => {
   const [searchFilter, setSearchFilter] = useState("");
-  const [executeSearch, { data }] = useLazyQuery(FEED_SEARCH_QUERY);
+  const [executeSearch, { data }] = useFeedSearchLazyQuery();
 
   return (
     <>

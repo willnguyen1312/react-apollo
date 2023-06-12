@@ -1,23 +1,10 @@
-import { gql, useMutation } from "@apollo/client";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  useLoginMutation,
+  useSignupMutation,
+} from "../../graphql/generated/schema";
 import { AUTH_TOKEN } from "../constants";
-
-const SIGNUP_MUTATION = gql`
-  mutation SignupMutation($email: String!, $password: String!, $name: String!) {
-    signup(email: $email, password: $password, name: $name) {
-      token
-    }
-  }
-`;
-
-const LOGIN_MUTATION = gql`
-  mutation LoginMutation($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
-      token
-    }
-  }
-`;
 
 const Login = () => {
   const navigate = useNavigate();
@@ -28,25 +15,31 @@ const Login = () => {
     name: "",
   });
 
-  const [login] = useMutation(LOGIN_MUTATION, {
+  const [login] = useLoginMutation({
     variables: {
       email: formState.email,
       password: formState.password,
     },
     onCompleted: ({ login }) => {
-      localStorage.setItem(AUTH_TOKEN, login.token);
+      if (!login) {
+        return;
+      }
+      localStorage.setItem(AUTH_TOKEN, login.token ?? "");
       navigate("/");
     },
   });
 
-  const [signup] = useMutation(SIGNUP_MUTATION, {
+  const [signup] = useSignupMutation({
     variables: {
       name: formState.name,
       email: formState.email,
       password: formState.password,
     },
     onCompleted: ({ signup }) => {
-      localStorage.setItem(AUTH_TOKEN, signup.token);
+      if (!signup) {
+        return;
+      }
+      localStorage.setItem(AUTH_TOKEN, signup.token ?? "");
       navigate("/");
     },
   });

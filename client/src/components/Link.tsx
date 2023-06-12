@@ -1,27 +1,6 @@
-import { gql, useMutation } from "@apollo/client";
+import { FeedDocument, useVoteMutation } from "../../graphql/generated/schema";
 import { AUTH_TOKEN, LINKS_PER_PAGE } from "../constants";
 import { timeDifferenceForDate } from "../utils";
-import { FEED_QUERY } from "./LinkList";
-
-const VOTE_MUTATION = gql`
-  mutation VoteMutation($linkId: ID!) {
-    vote(linkId: $linkId) {
-      id
-      link {
-        id
-        votes {
-          id
-          user {
-            id
-          }
-        }
-      }
-      user {
-        id
-      }
-    }
-  }
-`;
 
 const Link = (props: any) => {
   const { link } = props;
@@ -31,13 +10,16 @@ const Link = (props: any) => {
   const skip = 0;
   const orderBy = { createdAt: "desc" };
 
-  const [vote] = useMutation(VOTE_MUTATION, {
+  const [vote] = useVoteMutation({
     variables: {
       linkId: link.id,
     },
-    update: (cache, { data: { vote } }) => {
+    update: (cache, { data }) => {
+      if (!data) return;
+
+      const { vote } = data;
       const { feed }: any = cache.readQuery({
-        query: FEED_QUERY,
+        query: FeedDocument,
         variables: {
           take,
           skip,
@@ -56,7 +38,7 @@ const Link = (props: any) => {
       });
 
       cache.writeQuery({
-        query: FEED_QUERY,
+        query: FeedDocument,
         data: {
           feed: {
             links: updatedLinks,
