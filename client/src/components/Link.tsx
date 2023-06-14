@@ -41,6 +41,8 @@ const LinkComponent = (props: {
 
       const { feed } = result;
 
+      // console.log(cache.identify(feed.links[0]));
+
       const updatedLinks = feed.links.map((feedLink) => {
         if (feedLink.id === link.id) {
           return {
@@ -51,17 +53,13 @@ const LinkComponent = (props: {
         return feedLink;
       });
 
-      cache.writeQuery({
-        query: FeedDocument,
-        data: {
-          feed: {
-            links: updatedLinks,
+      cache.modify({
+        fields: {
+          feed() {
+            return {
+              links: updatedLinks,
+            };
           },
-        },
-        variables: {
-          take,
-          skip,
-          orderBy,
         },
       });
     },

@@ -1,7 +1,5 @@
 import {
-  FeedDocument,
   FeedQuery,
-  FeedQueryResult,
   Sort,
   useFeedQuery,
   useNewLinkSubscription,
@@ -45,78 +43,49 @@ const LinkList = () => {
     variables: getQueryVariables(isNewPage, page),
   });
 
-  // subscribeToMore({
-  //   document: NewLinkDocument,
-  //   updateQuery: (prev, { subscriptionData }) => {
-  //     if (!subscriptionData.data) return prev;
-  //     const { newLink } = subscriptionData.data as Subscription;
-
-  //     if (!newLink) {
-  //       return prev;
-  //     }
-
-  //     const exists = prev.feed.links.find(({ id }) => id === newLink.id);
-  //     if (exists) return prev;
-
-  //     return Object.assign({}, prev, {
-  //       feed: {
-  //         links: [newLink, ...prev.feed.links],
-  //         count: prev.feed.links.length + 1,
-  //         __typename: prev.feed.__typename,
-  //       },
-  //     });
-  //   },
-  // });
-
-  // subscribeToMore({
-  //   document: NewVotesDocument,
-  // });
-
   useNewVotesSubscription();
 
   useNewLinkSubscription({
     onData: (result) => {
-      const {
-        data: { data },
-        client,
-      } = result;
-      if (!data) {
-        return;
-      }
+      console.log("onData", result.data.data);
 
-      const { newLink } = data;
+      // const {
+      //   data: { data },
+      //   client,
+      // } = result;
 
-      if (!newLink) {
-        return;
-      }
+      // if (!data) {
+      //   return;
+      // }
 
-      const take = LINKS_PER_PAGE;
-      const skip = 0;
-      const orderBy = { createdAt: "desc" };
+      // const { newLink } = data;
 
-      const prev = client.cache.readQuery({
-        query: FeedDocument,
-        variables: {
-          take,
-          skip,
-          orderBy,
-        },
-      }) as FeedQueryResult["data"];
+      // if (!newLink) {
+      //   return;
+      // }
 
-      client.cache.writeQuery({
-        query: FeedDocument,
-        data: {
-          feed: {
-            links: [newLink, ...(prev?.feed.links || [])],
-          },
-        },
+      // const take = LINKS_PER_PAGE;
+      // const skip = 0;
+      // const orderBy = { createdAt: "desc" };
 
-        variables: {
-          take,
-          skip,
-          orderBy,
-        },
-      });
+      // const prev = client.cache.readQuery({
+      //   query: FeedDocument,
+      //   variables: {
+      //     take,
+      //     skip,
+      //     orderBy,
+      //   },
+      // }) as FeedQueryResult["data"];
+
+      // client.cache.modify({
+      //   fields: {
+      //     feed() {
+      //       return {
+      //         links: [newLink, ...(prev?.feed.links || [])],
+      //       };
+      //     },
+      //   },
+      // });
     },
   });
 

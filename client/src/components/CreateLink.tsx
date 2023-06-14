@@ -45,18 +45,13 @@ const CreateLink = () => {
         return;
       }
 
-      cache.writeQuery({
-        query: FeedDocument,
-        data: {
-          feed: {
-            links: [post, ...result.feed.links],
+      cache.modify({
+        fields: {
+          feed() {
+            return {
+              links: [post, ...result.feed.links],
+            };
           },
-        },
-
-        variables: {
-          take,
-          skip,
-          orderBy,
         },
       });
     },
