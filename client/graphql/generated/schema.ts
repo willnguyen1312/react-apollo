@@ -81,6 +81,7 @@ export type MutationVoteArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  currentNumber?: Maybe<Scalars['Int']['output']>;
   feed: Feed;
   info: Scalars['String']['output'];
 };
@@ -100,8 +101,9 @@ export enum Sort {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  newLink?: Maybe<Link>;
+  newLink?: Maybe<Scalars['String']['output']>;
   newVote?: Maybe<Vote>;
+  numberIncremented?: Maybe<Scalars['Int']['output']>;
 };
 
 export type User = {
@@ -150,16 +152,6 @@ export type LoginMutationVariables = Exact<{
 
 
 export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'AuthPayload', token?: string | null } | null };
-
-export type NewLinkSubscriptionVariables = Exact<{ [key: string]: never; }>;
-
-
-export type NewLinkSubscription = { __typename?: 'Subscription', newLink?: { __typename?: 'Link', id: string, url: string, description: string, createdAt: any, postedBy?: { __typename?: 'User', id: string, name: string } | null, votes: Array<{ __typename?: 'Vote', id: string, user: { __typename?: 'User', id: string } }> } | null };
-
-export type NewVotesSubscriptionVariables = Exact<{ [key: string]: never; }>;
-
-
-export type NewVotesSubscription = { __typename?: 'Subscription', newVote?: { __typename?: 'Vote', id: string, link: { __typename?: 'Link', id: string, url: string, description: string, createdAt: any, postedBy?: { __typename?: 'User', id: string, name: string } | null, votes: Array<{ __typename?: 'Vote', id: string, user: { __typename?: 'User', id: string } }> }, user: { __typename?: 'User', id: string } } | null };
 
 export type SignupMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -354,96 +346,6 @@ export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginM
 export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
 export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
 export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
-export const NewLinkDocument = gql`
-    subscription NewLink {
-  newLink {
-    id
-    url
-    description
-    createdAt
-    postedBy {
-      id
-      name
-    }
-    votes {
-      id
-      user {
-        id
-      }
-    }
-  }
-}
-    `;
-
-/**
- * __useNewLinkSubscription__
- *
- * To run a query within a React component, call `useNewLinkSubscription` and pass it any options that fit your needs.
- * When your component renders, `useNewLinkSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useNewLinkSubscription({
- *   variables: {
- *   },
- * });
- */
-export function useNewLinkSubscription(baseOptions?: Apollo.SubscriptionHookOptions<NewLinkSubscription, NewLinkSubscriptionVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<NewLinkSubscription, NewLinkSubscriptionVariables>(NewLinkDocument, options);
-      }
-export type NewLinkSubscriptionHookResult = ReturnType<typeof useNewLinkSubscription>;
-export type NewLinkSubscriptionResult = Apollo.SubscriptionResult<NewLinkSubscription>;
-export const NewVotesDocument = gql`
-    subscription NewVotes {
-  newVote {
-    id
-    link {
-      id
-      url
-      description
-      createdAt
-      postedBy {
-        id
-        name
-      }
-      votes {
-        id
-        user {
-          id
-        }
-      }
-    }
-    user {
-      id
-    }
-  }
-}
-    `;
-
-/**
- * __useNewVotesSubscription__
- *
- * To run a query within a React component, call `useNewVotesSubscription` and pass it any options that fit your needs.
- * When your component renders, `useNewVotesSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useNewVotesSubscription({
- *   variables: {
- *   },
- * });
- */
-export function useNewVotesSubscription(baseOptions?: Apollo.SubscriptionHookOptions<NewVotesSubscription, NewVotesSubscriptionVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<NewVotesSubscription, NewVotesSubscriptionVariables>(NewVotesDocument, options);
-      }
-export type NewVotesSubscriptionHookResult = ReturnType<typeof useNewVotesSubscription>;
-export type NewVotesSubscriptionResult = Apollo.SubscriptionResult<NewVotesSubscription>;
 export const SignupDocument = gql`
     mutation Signup($email: String!, $password: String!, $name: String!) {
   signup(email: $email, password: $password, name: $name) {
