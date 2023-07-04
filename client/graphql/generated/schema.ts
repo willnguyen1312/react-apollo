@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
-export type Maybe<T> = T | null;
-export type InputMaybe<T> = Maybe<T>;
+export type Maybe<T> = T;
+export type InputMaybe<T> = T;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
@@ -136,14 +136,14 @@ export type FeedQueryVariables = Exact<{
 }>;
 
 
-export type FeedQuery = { __typename?: 'Query', feed: { __typename?: 'Feed', id: string, count: number, links: Array<{ __typename?: 'Link', id: string, createdAt: any, url: string, description: string, postedBy?: { __typename?: 'User', id: string, name: string } | null, votes: Array<{ __typename?: 'Vote', id: string, user: { __typename?: 'User', id: string } }> }> } };
+export type FeedQuery = { __typename?: 'Query', feed: { __typename?: 'Feed', id: string, count: number, links: Array<{ __typename?: 'Link', id: string, createdAt: any, url: string, description: string, postedBy?: { __typename?: 'User', id: string, name: string }, votes: Array<{ __typename?: 'Vote', id: string, user: { __typename?: 'User', id: string } }> }> } };
 
 export type FeedSearchQueryVariables = Exact<{
   filter: Scalars['String']['input'];
 }>;
 
 
-export type FeedSearchQuery = { __typename?: 'Query', feed: { __typename?: 'Feed', id: string, links: Array<{ __typename?: 'Link', id: string, url: string, description: string, createdAt: any, postedBy?: { __typename?: 'User', id: string, name: string } | null, votes: Array<{ __typename?: 'Vote', id: string, user: { __typename?: 'User', id: string } }> }> } };
+export type FeedSearchQuery = { __typename?: 'Query', feed: { __typename?: 'Feed', id: string, links: Array<{ __typename?: 'Link', id: string, url: string, description: string, createdAt: any, postedBy?: { __typename?: 'User', id: string, name: string }, votes: Array<{ __typename?: 'Vote', id: string, user: { __typename?: 'User', id: string } }> }> } };
 
 export type LoginMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -151,7 +151,7 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'AuthPayload', token?: string | null } | null };
+export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'AuthPayload', token?: string } };
 
 export type SignupMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -160,14 +160,14 @@ export type SignupMutationVariables = Exact<{
 }>;
 
 
-export type SignupMutation = { __typename?: 'Mutation', signup?: { __typename?: 'AuthPayload', token?: string | null } | null };
+export type SignupMutation = { __typename?: 'Mutation', signup?: { __typename?: 'AuthPayload', token?: string } };
 
 export type VoteMutationVariables = Exact<{
   linkId: Scalars['ID']['input'];
 }>;
 
 
-export type VoteMutation = { __typename?: 'Mutation', vote?: { __typename?: 'Vote', id: string, link: { __typename?: 'Link', id: string, votes: Array<{ __typename?: 'Vote', id: string, user: { __typename?: 'User', id: string } }> }, user: { __typename?: 'User', id: string } } | null };
+export type VoteMutation = { __typename?: 'Mutation', vote?: { __typename?: 'Vote', id: string, link: { __typename?: 'Link', id: string, votes: Array<{ __typename?: 'Vote', id: string, user: { __typename?: 'User', id: string } }> }, user: { __typename?: 'User', id: string } } };
 
 
 export const CreateLinkDocument = gql`

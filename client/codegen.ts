@@ -13,6 +13,7 @@ const config: CodegenConfig = {
       ],
       config: {
         withHooks: true,
+        maybeValue: "T",
       },
     },
   },
